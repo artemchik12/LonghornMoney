@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This project is no longer being actively developed. It may be incompatible with newer versions of the AT protocol and may introduce security risks. Use at your own risk.
+> This project is no longer being actively developed. It may be incompatible with newer versions of the AT protocol and may introduce security risks. Use at your own discretion.
 
 # Longhorn Bluesky
 A third-party Bluesky client with a Windows Longhorn theme.  
