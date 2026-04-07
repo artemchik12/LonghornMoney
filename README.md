@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This project is no longer being actively developed. It may be incompatible with newer versions of the AT protocol and may introduce security risks. Use at your own risk.
+
 # Longhorn Bluesky
 A third-party Bluesky client with a Windows Longhorn theme.  
     ![A Bluesky client with a skeuomorphic design reminiscent of Windows Longhorn. The login screen is being shown.](tease1.png)
