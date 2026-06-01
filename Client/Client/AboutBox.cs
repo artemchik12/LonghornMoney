@@ -15,7 +15,7 @@ namespace Client
         public AboutBox()
         {
             InitializeComponent();
-            labelVersion.Text = "Version " + HKCU_GetString(@"SOFTWARE\LonghornBluesky", "Ver");
+            labelVersion.Text = "Version 1.0.0";
         }
         public string HKCU_GetString(string path, string key)
         {
@@ -105,6 +105,16 @@ namespace Client
             }
         }
         #endregion
+
+        private void labelProductName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelVersion_Click(object sender, EventArgs e)
+        {
+
+        }
 
     }
 }

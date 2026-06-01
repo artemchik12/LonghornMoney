@@ -1,211 +1,75 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Net.Sockets;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using FishyFlip;
-using INI;
-using Microsoft.Extensions.Logging.Debug;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for Login.xaml
-    /// </summary>
-    public partial class Login : Page
+    public partial class Login : Window
     {
-        private readonly MainWindow mw;
-        public Login(MainWindow mainWindow)
+        private string defaultPhonePlaceholder = "Номер телефона (например, 7926...)";
+
+        public Login()
         {
             InitializeComponent();
-            SupportText.Visibility = Visibility.Visible;
-            PassBoxButton.Visibility = Visibility.Visible;
-            LoginPage.Visibility = Visibility.Visible;
-            WelcomePage.Visibility = Visibility.Collapsed;
-            mw = mainWindow;
-            PassBoxButton.MouseUp += (s, ee) => _ = SignIntoBlueSky(UserBox.Text, PassBox.Password, HostProv.Text);
-            if (File.Exists("config.ini"))
-            {
-                IniFile myIni = new IniFile("config.ini");
-                if (myIni.Read("MSN", "LHbsky") == "1")
-                {
-                    Wordmark.Source = new BitmapImage(new Uri("pack://application:,,,/res/logoshad.png"));
-                    Wordmark.Height = 102;
-                    Wordmark.Margin = new Thickness(0, 0, 0, 140);
-                    Welcome.FontSize = 24;
-                }
-                if (myIni.Read("ICanHasSecretBeytahFeatures", "LHbsky") == "2")
-                {
-                    CreateAccount.Visibility = Visibility.Visible;
-                    LoginGuest.Visibility = Visibility.Visible;
-                    ForgotPassword.Visibility = Visibility.Visible;
-                }
-            }
-            if (mainWindow.HKCU_GetString(@"SOFTWARE\LonghornBluesky", "Remember") == "true")
-            {
-                _ = SignIntoBlueSky(mainWindow.HKCU_GetString(@"SOFTWARE\LonghornBluesky", "RememberUsername"), mainWindow.HKCU_GetString(@"SOFTWARE\LonghornBluesky", "RememberPassword"), mainWindow.HKCU_GetString(@"SOFTWARE\LonghornBluesky", "RememberHost"));
-            }
-        }
-        private async Task SignIntoBlueSky(string identifier, string password, string provider)
-        {
-            SupportText.Visibility = Visibility.Collapsed;
-            PassBoxButton.Visibility = Visibility.Collapsed;
-            LoginPage.Visibility = Visibility.Collapsed;
-            WelcomePage.Visibility = Visibility.Visible;
-            WelcomeText.Content = "Please wait...";
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            Uri test = new Uri("https://bsky.social");
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-            try
-            {
-                test = new Uri(provider);
-            }
-            catch
-            {
-                _ = MessageBox.Show("Failed to authenticate.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            WelcomeText.Content = "Connecting to Bluesky...";
-            ATProtocol atProtocol = new ATProtocolBuilder()
-            .WithLogger(new DebugLoggerProvider().CreateLogger("FishyFlip"))
-            .WithInstanceUrl(new Uri(HostProv.Text))
-            .Build();
-            WelcomeText.Content = "Attempting to authenticate...";
-            (FishyFlip.Models.Session session, FishyFlip.Models.ATError error) = await atProtocol.AuthenticateWithPasswordResultAsync(identifier, password);
-            if (session is null)
-            {
-                ShowPageAgain();
-                Error.Visibility = Visibility.Visible;
-                if (identifier[0].ToString() == "@")
-                {
-                    Error.Content = "Your username cannot start with @";
-                }
-                else if (identifier == string.Empty || password == string.Empty)
-                {
-                    Error.Content = "An identifier and password is required to sign in";
-                }
-                else
-                {
-                    Error.Content = error.Detail.Message;
-                }
-                return;
-            }
-            // _ = MessageBox.Show("Authenticated.");
-            // _ = MessageBox.Show($"Session Did: {session.Did}");
-            // _ = MessageBox.Show($"Session Email: {session.Email}");
-            // _ = MessageBox.Show($"Session Handle: {session.Handle}");
-            // _ = MessageBox.Show($"Session Token: {session.AccessJwt}");
-            WelcomeText.Content = "Almost there...";
-            if ((bool)RememberCheckBox.IsChecked)
-            {
-                mw.HKCU_AddKey(@"SOFTWARE\LonghornBluesky", "Remember", "true");
-                mw.HKCU_AddKey(@"SOFTWARE\LonghornBluesky", "RememberUsername", identifier);
-                mw.HKCU_AddKey(@"SOFTWARE\LonghornBluesky", "RememberPassword", password);
-                mw.HKCU_AddKey(@"SOFTWARE\LonghornBluesky", "RememberHost", provider);
-            }
-            _ = mw.OpenFeed(session, atProtocol);
         }
 
-        private void TimeOutFunc(object sender, EventArgs e)
-        {
-            ShowPageAgain();
-            Error.Visibility = Visibility.Visible;
-            Error.Content = "Connection timed out";
-        }
-        private void ShowPageAgain()
-        {
-            SupportText.Visibility = Visibility.Visible;
-            PassBoxButton.Visibility = Visibility.Visible;
-            LoginPage.Visibility = Visibility.Visible;
-            WelcomePage.Visibility = Visibility.Collapsed;
-        }
-        private void UserBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (UserBox.Text == string.Empty)
-            {
-                UserBox.Text = "Username or email address";
-            }
-            UserBox.Foreground = new SolidColorBrush(Colors.Gray);
-        }
-
+        // ==========================================
+        // 🎨 ВИЗУАЛЬНЫЕ ЭФФЕКТЫ (Плейсхолдеры)
+        // ==========================================
         private void UserBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (UserBox.Text == "Username or email address")
+            if (UserBox.Text == defaultPhonePlaceholder)
             {
                 UserBox.Text = string.Empty;
+                UserBox.Foreground = new SolidColorBrush(Colors.Black);
             }
-            UserBox.Foreground = new SolidColorBrush(Colors.Black);
+        }
+
+        private void UserBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(UserBox.Text))
+            {
+                UserBox.Text = defaultPhonePlaceholder;
+                UserBox.Foreground = new SolidColorBrush(Colors.Gray);
+            }
         }
 
         private void PassBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             PasswordPreviewText.Visibility = Visibility.Collapsed;
-            PassBox.Foreground = new SolidColorBrush(Colors.Black);
         }
 
         private void PassBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (PassBox.Password == string.Empty)
+            if (string.IsNullOrWhiteSpace(PassBox.Password))
             {
                 PasswordPreviewText.Visibility = Visibility.Visible;
             }
-            PassBox.Foreground = new SolidColorBrush(Colors.Gray);
-        }
-
-        private void HostProv_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (HostProv.Text == string.Empty)
-            {
-                HostProv.Text = "https://bsky.social";
-            }
-            HostProv.Foreground = new SolidColorBrush(Colors.Gray);
         }
 
         private void HostProv_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (HostProv.Text == "https://bsky.social")
-            {
-                HostProv.Text = string.Empty;
-            }
             HostProv.Foreground = new SolidColorBrush(Colors.Black);
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void HostProv_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            _ = BG.Focus();
+            HostProv.Foreground = new SolidColorBrush(Colors.Gray);
         }
 
-        private void PassBoxButton_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-3.png"));
-        }
-
-        private void PassBoxButton_MouseEnter(object sender, MouseEventArgs e)
-        {
-            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-2.png"));
-            PassBoxButton.Tag = true;
-        }
-
-        private void PassBoxButton_MouseLeave(object sender, MouseEventArgs e)
-        {
-            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-1.png"));
-            PassBoxButton.Tag = false;
-        }
-
-        private void CheckBox_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             ServWrapPanel.Visibility = Visibility.Visible;
         }
 
-        private void CheckBox_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             ServWrapPanel.Visibility = Visibility.Collapsed;
-            HostProv.Text = "https://bsky.social";
         }
 
         private void Label_MouseEnter(object sender, MouseEventArgs e)
@@ -218,40 +82,132 @@ namespace Client
             ((TextBlock)sender).TextDecorations.Clear();
         }
 
-        private void Support_Click(object sender, MouseButtonEventArgs e)
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Support sup = new Support();
-            sup.Show();
+            BG.Focus();
         }
 
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        // ==========================================
+        // 🔘 КНОПКА АВТОРИЗАЦИИ (Стрелочка)
+        // ==========================================
+        private void PassBoxButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Unloaded -= Page_Unloaded;
-            BG.MouseDown -= Image_MouseDown;
-            Wordmark.MouseDown -= Image_MouseDown;
-            UserBox.LostKeyboardFocus -= UserBox_LostKeyboardFocus;
-            UserBox.GotKeyboardFocus -= UserBox_GotKeyboardFocus;
-            PassBox.LostKeyboardFocus -= PassBox_LostKeyboardFocus;
-            PassBox.GotKeyboardFocus -= PassBox_GotKeyboardFocus;
-            HostCheckBox.Checked -= CheckBox_Checked;
-            HostCheckBox.Unchecked -= CheckBox_Unchecked;
-            HostProv.LostKeyboardFocus -= HostProv_LostKeyboardFocus;
-            HostProv.GotKeyboardFocus -= HostProv_GotKeyboardFocus;
-            CreateAccount.MouseEnter -= Label_MouseEnter;
-            CreateAccount.MouseLeave -= Label_MouseLeave;
-            LoginGuest.MouseEnter -= Label_MouseEnter;
-            LoginGuest.MouseLeave -= Label_MouseLeave;
-            ForgotPassword.MouseEnter -= Label_MouseEnter;
-            ForgotPassword.MouseLeave -= Label_MouseLeave;
-            SupportText.MouseEnter -= Label_MouseEnter;
-            SupportText.MouseLeave -= Label_MouseLeave;
-            SupportText.MouseUp -= Support_Click;
-            PassBoxButton.MouseEnter -= PassBoxButton_MouseEnter;
-            PassBoxButton.MouseLeave -= PassBoxButton_MouseLeave;
-            PassBoxButton.MouseDown -= PassBoxButton_MouseDown;
-            PassBoxButton.MouseUp -= PassBoxButton_MouseLeave;
-            PassBoxButton.MouseUp -= (s, ee) => _ = SignIntoBlueSky(UserBox.Text, PassBox.Password, HostProv.Text);
-            GC.SuppressFinalize(this);
+            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-3.png"));
+        }
+
+        private void PassBoxButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-2.png"));
+        }
+
+        private void PassBoxButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-1.png"));
+        }
+
+        private async void PassBoxButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            PassBoxButton.Source = new BitmapImage(new Uri("pack://application:,,,/res/signinbutton-1.png"));
+
+            string phone = UserBox.Text == defaultPhonePlaceholder ? "" : UserBox.Text;
+            string pass = PassBox.Password;
+
+            if (HostCheckBox.IsChecked == true) ApiClient.ServerUrl = HostProv.Text;
+
+            ShowLoadingScreen("Выполняется вход в систему...");
+
+            try
+            {
+                var response = await Task.Run(() => ApiClient.Execute(new Dictionary<string, object> { 
+                    { "request", "auth" }, 
+                    { "username", phone }, 
+                    { "password", pass } 
+                }));
+
+                if (response != null && response.ContainsKey("result") && response["result"].ToString() == "ok")
+                {
+                    ApiClient.CurrentSid = response["sid"].ToString();
+                    ApiClient.CurrentPhone = phone;
+
+                    // 🔥 ИСПРАВЛЕНИЕ: Открываем Дашборд как Окно!
+                    Dashboard dashboard = new Dashboard();
+                    dashboard.Show();
+                    this.Close();
+                }
+                else
+                {
+                    ShowErrorScreen(response != null && response.ContainsKey("text") ? response["text"].ToString() : "Неверный логин или пароль");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorScreen("Ошибка сети: " + ex.Message);
+            }
+        }
+
+        // ==========================================
+        // 📩 ЗАПРОС СМС КОДА
+        // ==========================================
+        private async void GetSmsCode_Click(object sender, MouseButtonEventArgs e)
+        {
+            string phone = UserBox.Text == defaultPhonePlaceholder ? "" : UserBox.Text;
+            if (HostCheckBox.IsChecked == true) ApiClient.ServerUrl = HostProv.Text;
+
+            ShowLoadingScreen("Отправка запроса...");
+
+            try
+            {
+                var response = await Task.Run(() => ApiClient.Execute(new Dictionary<string, object> { 
+                    { "request", "password_get" }, 
+                    { "msisdn", phone } 
+                }));
+
+                ShowErrorScreen(""); // Сбрасываем загрузку
+                Error.Visibility = Visibility.Collapsed;
+
+                if (response != null && response.ContainsKey("result") && response["result"].ToString() == "ok")
+                {
+                    MessageBox.Show("Код успешно отправлен в Telegram!", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                    PassBox.Focus();
+                }
+                else
+                {
+                    ShowErrorScreen(response != null && response.ContainsKey("text") ? response["text"].ToString() : "Сбой отправки кода");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorScreen("Ошибка сети: " + ex.Message);
+            }
+        }
+
+        private void Support_Click(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("В этом эмуляторе поддержка осуществляется через чат Telegram канала. ", "Поддержка", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // ==========================================
+        // 🔄 УПРАВЛЕНИЕ СОСТОЯНИЯМИ ЭКРАНА
+        // ==========================================
+        private void ShowLoadingScreen(string text)
+        {
+            Error.Visibility = Visibility.Collapsed;
+
+           
+            LoginPanel.Visibility = Visibility.Collapsed;
+            WelcomeText.Content = text;
+            WelcomePanel.Visibility = Visibility.Visible;
+        }
+
+        private void ShowErrorScreen(string errorMsg)
+        {
+            WelcomePanel.Visibility = Visibility.Collapsed;
+            LoginPanel.Visibility = Visibility.Visible;
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                Error.Content = errorMsg;
+                Error.Visibility = Visibility.Visible;
+            }
         }
     }
 }

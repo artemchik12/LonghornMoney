@@ -1,0 +1,72 @@
+﻿<Page x:Class="Client.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Главная" Background="Transparent" Width="377.5">
+
+    <Grid Margin="20,20,10,20">
+        <!-- Тот самый оригинальный фон из Post.xaml -->
+        <Rectangle x:Name="TheBackground" RadiusX="5" RadiusY="5" Stroke="#FF9FBDD2" Focusable="True" Margin="0,0,10,0">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#BFDCF0FF"/>
+                    <GradientStop Color="#7FCDE9FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+            <Rectangle.Effect>
+                <DropShadowEffect Opacity="0.2" BlurRadius="10" ShadowDepth="3"/>
+            </Rectangle.Effect>
+        </Rectangle>
+
+        <!-- Содержимое карточки баланса -->
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ЗАГОЛОВОК (В стиле PFP и Username из Post.xaml) -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                <Grid>
+                    <!-- Используем рамку для аватарки из оригинала, чтобы было красиво -->
+                    <Image Source="/res/usertile.png" Width="32" Height="32">
+                        <Image.Effect>
+                            <DropShadowEffect Opacity="0.33" BlurRadius="5" ShadowDepth="2"/>
+                        </Image.Effect>
+                    </Image>
+                    <Image Source="/res/PFPFrameSmal.png" Width="32" Height="32"/>
+                </Grid>
+                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="МегаФон Деньги" Foreground="#FF0D467A" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="Ваш личный счет" Foreground="#FF9AA6B1" FontSize="11" FontStyle="Italic"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Rectangle Grid.Row="0" Fill="#FF9FBDD2" Height="1" VerticalAlignment="Bottom" Margin="-20,0,-20,-10"/>
+
+            <!-- БАЛАНС -->
+            <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,30,0,30">
+                <TextBlock Text="Доступные средства" Foreground="#FF0D467A" FontSize="14" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                <TextBlock x:Name="lblBalance" Text="0,00 ₽" FontSize="48" FontWeight="Bold" Foreground="#228B22" HorizontalAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect ShadowDepth="1" Opacity="0.5" BlurRadius="2" Color="White"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+            </StackPanel>
+
+            <Rectangle Grid.Row="2" Fill="#FF9FBDD2" Height="1" VerticalAlignment="Top" Margin="-20,-10,-20,0"/>
+
+            <!-- КНОПКИ ВНИЗУ (В стиле кнопок Reply/Repost из Post.xaml) -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Image Source="/res/RefreshIcon.png" Width="16" Height="16" Margin="0,0,5,0" Cursor="Hand" MouseUp="BtnRefresh_Click"/>
+                <TextBlock Text="Обновить баланс" Foreground="#FF5389BB" Cursor="Hand" MouseEnter="Link_MouseEnter" MouseLeave="Link_MouseLeave" MouseUp="BtnRefresh_Click" FontWeight="Bold"/>
+            </StackPanel>
+
+            <!-- Левая нижняя кнопка (для красоты) -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+                <Image Source="/res/MoreIcon.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                <TextBlock x:Name="lblPhone" Text="7926..." Foreground="#FF9AA6B1"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>
